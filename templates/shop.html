@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="shop-page">
+    <h2>🛍️ Available Products</h2>
+
+    {% if products %}
+        <div class="product-list">
+            {% for product in products %}
+                <div class="product-card">
+                    <h3>{{ product.name }}</h3>
+                    <p><strong>Price:</strong> Ksh {{ "%.2f"|format(product.price) }}</p>
+                    <p><strong>Seller:</strong> {{ product.seller.nickname }}</p>
+                    <p>{{ product.description }}</p>
+
+                    <!-- Product image -->
+                    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="main-image">
+
+                    <!-- Extra images -->
+                    {% if product.extra_images %}
+                        <div class="extra-images">
+                            {% for img in product.extra_images.split(',') %}
+                                <img src="{{ url_for('static', filename=img) }}" alt="Extra image">
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="actions">
+                        <!-- ✅ Pass product_id -->
+                        <a href="{{ url_for('buy_page', product_id=product.id) }}" class="btn btn-success">Buy Now</a>
+                        
+                        <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                            <button type="submit" class="btn btn-warning">🛒 Add to Cart</button>
+                        </form>
+                        
+                        <a href="{{ url_for('review_product', product_id=product.id) }}" class="btn btn-info">Leave a Review</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No products available at the moment.</p>
+    {% endif %}
+</div>
+{% endblock %}

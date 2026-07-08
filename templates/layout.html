@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Laikipia Shikisha</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="Company Logo" class="logo">
+            <h1>🌸 Laikipia Shikisha 🛍️</h1>
+        </div>
+        <nav>
+            <a href="{{ url_for('index') }}">Home</a>
+            <a href="{{ url_for('shop_page') }}">Buy</a>
+            <a href="{{ url_for('sell_page') }}">Sell</a>
+            <a href="{{ url_for('categories_page') }}">Categories</a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('account_page') }}" class="account-btn">My Account</a>
+                <a href="{{ url_for('logout') }}">Logout</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="account-btn">Login / Sign Up</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p>Made with ❤️ for Laikipia University</p>
+    </footer>
+
+    <!-- ✅ Scripts block for child templates -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

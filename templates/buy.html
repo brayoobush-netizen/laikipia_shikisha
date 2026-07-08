@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="buy-confirm">
+    <h2>Confirm Purchase</h2>
+
+    <div class="product-detail">
+        <h3>{{ product.name }}</h3>
+        <p><strong>Price:</strong> Ksh {{ "%.2f"|format(product.price) }}</p>
+        <p><strong>Seller:</strong> {{ product.seller.nickname }} ({{ product.seller.email }})</p>
+        <p><strong>Description:</strong> {{ product.description }}</p>
+
+        <!-- Product image -->
+        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="main-image">
+
+        <!-- Extra images -->
+        {% if product.extra_images %}
+            <div class="extra-images">
+                {% for img in product.extra_images.split(',') %}
+                    <img src="{{ url_for('static', filename=img) }}" alt="Extra image">
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Confirm form -->
+    <form method="POST" class="confirm-form">
+        <button type="submit" class="btn btn-success">✅ Confirm Purchase</button>
+        <a href="{{ url_for('account_page') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

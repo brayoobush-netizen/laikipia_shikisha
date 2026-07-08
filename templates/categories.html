@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2>📂 Shop by Category</h2>
+<div class="category-buttons">
+    <a href="{{ url_for('show_category', category='Official Stores') }}">🏬 Official Stores</a>
+    <a href="{{ url_for('show_category', category='Phones & Tablets') }}">📱 Phones & Tablets</a>
+    <a href="{{ url_for('show_category', category='TVs & Audio') }}">📺 TVs & Audio</a>
+    <a href="{{ url_for('show_category', category='Appliances') }}">⚡ Appliances</a>
+    <a href="{{ url_for('show_category', category='Health & Beauty') }}">💄 Health & Beauty</a>
+    <a href="{{ url_for('show_category', category='Home & Office') }}">🏠 Home & Office</a>
+    <a href="{{ url_for('show_category', category='Fashion') }}">👗 Fashion</a>
+    <a href="{{ url_for('show_category', category='Computing') }}">💻 Computing</a>
+    <a href="{{ url_for('show_category', category='Gaming') }}">🎮 Gaming</a>
+    <a href="{{ url_for('show_category', category='Supermarket') }}">🛒 Supermarket</a>
+    <a href="{{ url_for('show_category', category='Baby Products') }}">🍼 Baby Products</a>
+    <a href="{{ url_for('show_category', category='Other') }}">✨ Other Categories</a>
+</div>
+{% endblock %}

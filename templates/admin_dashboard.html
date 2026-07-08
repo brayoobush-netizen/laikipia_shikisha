@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="admin-dashboard">
+    <h2>📊 Admin Dashboard</h2>
+
+    <!-- Deals List -->
+    <section>
+        <h3>All Deals</h3>
+        <div class="deal-list">
+            {% for product in products %}
+            <div class="deal-row">
+                <span class="deal-number">{{ loop.index }}</span>
+                <span class="deal-name">{{ product.name }}</span>
+                <span class="deal-seller">{{ product.seller.nickname }} ({{ product.seller.email }})</span>
+                <span class="deal-price">Ksh {{ "%.2f"|format(product.price) }}</span>
+                <span class="deal-status">{{ product.status }}</span>
+
+                {% if product.status == 'pending' %}
+                    <a href="{{ url_for('approve_product', product_id=product.id) }}" class="btn btn-success">Approve</a>
+                    <a href="{{ url_for('reject_product', product_id=product.id) }}" class="btn btn-danger">Reject</a>
+                {% endif %}
+
+                <!-- Details button -->
+                <button class="btn btn-info" onclick="showDetails({{ product.id }})">Details</button>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+
+<!-- Popup Modal -->
+<div id="detailsPopup" class="popup">
+    <div class="popup-content">
+        <span class="close-btn" onclick="closePopup()">&times;</span>
+        <h3>Activity Details</h3>
+        <div id="popup-body"></div>
+    </div>
+</div>
+
+<script>
+function showDetails(productId) {
+    fetch(`/activity/${productId}`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('popup-body').innerHTML = `
+                <p><strong>Product:</strong> ${data.product}</p>
+                <p><strong>Action:</strong> ${data.action}</p>
+                <p><strong>Actor:</strong> ${data.actor}</p>
+                <p><strong>Timestamp:</strong> ${data.timestamp}</p>
+            `;
+            document.getElementById('detailsPopup').style.display = 'flex';
+        });
+}
+function closePopup() {
+    document.getElementById('detailsPopup').style.display = 'none';
+}
+</script>
+{% endblock %}

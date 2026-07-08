@@ -1,0 +1,78 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="form-container">
+    <h2>Login</h2>
+    <form method="POST">
+        <label for="identifier">Email or Username</label>
+        <input type="text" name="identifier" required>
+
+        <label for="password">Password</label>
+        <input type="password" name="password" required>
+
+        <button type="submit" class="btn">Login</button>
+    </form>
+    <p>Don’t have an account? <a href="{{ url_for('signup') }}">Sign up here</a></p>
+</div>
+
+<!-- ✅ Success Popup -->
+<div id="success-popup" class="popup">
+    <div class="popup-content success">
+        <span class="tick">✔</span>
+        <h2>✨ Welcome Back!</h2>
+        <p>Hello, <strong>{{ current_user.nickname }}</strong>! Ready to explore <em>Laikipia Shikisha</em> again?</p>
+    </div>
+</div>
+
+<!-- ❌ Error Popup -->
+<div id="error-popup" class="popup">
+    <div class="popup-content error">
+        <span class="tick">✖</span>
+        <h2>⚠️ Login Failed</h2>
+        <p>Invalid credentials. Please check your email/username and password.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Confetti library -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+<script>
+function showSuccessPopup() {
+    const popup = document.getElementById("success-popup");
+    popup.style.display = "flex";
+
+    // 🎉 Confetti swirl effect
+    confetti({
+        particleCount: 180,
+        spread: 100,
+        startVelocity: 45,
+        origin: { y: 0.6 }
+    });
+
+    // Hide after 3.5 seconds and redirect to account page
+    setTimeout(() => {
+        popup.style.display = "none";
+        window.location.href = "{{ url_for('account_page') }}";
+    }, 3500);
+}
+
+function showErrorPopup() {
+    const popup = document.getElementById("error-popup");
+    popup.style.display = "flex";
+
+    // ❌ Shake animation for error
+    popup.classList.add("shake");
+    setTimeout(() => {
+        popup.style.display = "none";
+        popup.classList.remove("shake");
+    }, 3500);
+}
+
+// Auto-run popup depending on outcome
+{% if success %}
+    showSuccessPopup();
+{% elif error %}
+    showErrorPopup();
+{% endif %}
+</script>
+{% endblock %}

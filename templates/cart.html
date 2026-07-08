@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="cart-page">
+    <h2>🛒 Your Cart</h2>
+
+    {% if products %}
+        <table class="cart-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Seller</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>Ksh {{ "%.2f"|format(product.price) }}</td>
+                    <td>{{ product.seller.nickname }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Checkout form -->
+        <form method="POST" action="{{ url_for('checkout') }}" class="checkout-form">
+            <button type="submit" class="btn btn-success">✅ Confirm Checkout</button>
+        </form>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="form-container sell-page">
+    <h2>Sell a Product</h2>
+    <!-- enctype is required for file uploads -->
+    <form method="POST" enctype="multipart/form-data" class="sell-form">
+        
+        <label for="name">Product Name</label>
+        <input type="text" name="name" id="name" required>
+
+        <label for="description">Description</label>
+        <textarea name="description" id="description" required></textarea>
+
+        <label for="price">Price (Ksh)</label>
+        <input type="number" step="1" name="price" id="price" required>
+
+        <label for="image">Upload Image</label>
+        <input type="file" name="image" id="image" accept="image/*">
+
+        <label for="category">Category</label>
+        <select name="category" id="category">
+            <option value="Uncategorized">Uncategorized</option>
+            <option value="Electronics">Electronics</option>
+            <option value="Fashion">Fashion</option>
+            <option value="Books">Books</option>
+            <option value="Home">Home</option>
+            <option value="Sports">Sports</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">➕ List Product</button>
+    </form>
+</div>
+{% endblock %}
