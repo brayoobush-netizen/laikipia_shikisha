@@ -2,18 +2,20 @@
 {% block content %}
 <div class="account-page">
 
+    <!-- Greeting -->
+    <div class="welcome-banner">
+        <h2>Hello, {{ current_user.nickname }} 👋</h2>
+    </div>
+
     <!-- Hamburger button -->
-<button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
 
-<!-- Collapsible Sidebar -->
-<div id="sidebar" class="sidebar">
-    <a href="{{ url_for('view_cart') }}" class="btn btn-warning">🛒 Cart</a>
-    <a href="{{ url_for('sell_page') }}" class="btn btn-primary">➕ Add Product</a>
-    <a href="{{ url_for('shop_page') }}" class="btn btn-info">Browse</a>
-</div>
-
-
-
+    <!-- Collapsible Sidebar -->
+    <div id="sidebar" class="sidebar">
+        <a href="{{ url_for('view_cart') }}" class="btn btn-warning">🛒 Cart</a>
+        <a href="{{ url_for('sell_page') }}" class="btn btn-primary">➕ Add Product</a>
+        <a href="{{ url_for('shop_page') }}" class="btn btn-info">Browse</a>
+    </div>
 
     <!-- Search Bar -->
     <div class="search-bar">
@@ -24,30 +26,29 @@
     </div>
 
     <!-- Products Marketplace -->
-<div class="section">
-    <h3>All Live Products</h3>
-    {% if approved_products %}
-        <div class="product-list">
-            {% for product in approved_products %}
-                <div class="product-card">
-                    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="main-image">
-                    <h4>{{ product.name }}</h4>
-                    <p>Ksh {{ "%.2f"|format(product.price) }}</p>
-                    <p><small>Seller: {{ product.seller.nickname }}</small></p>
-                    <div class="actions">
-                        <a href="{{ url_for('buy_page', product_id=product.id) }}" class="btn btn-success">Buy</a>
-                        <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
-                            <button type="submit" class="btn btn-warning">🛒 Add</button>
-                        </form>
+    <div class="section">
+        <h3>All Live Products</h3>
+        {% if approved_products %}
+            <div class="product-list">
+                {% for product in approved_products %}
+                    <div class="product-card">
+                        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="main-image">
+                        <h4>{{ product.name }}</h4>
+                        <p>Ksh {{ "%.2f"|format(product.price) }}</p>
+                        <p><small>Seller: {{ product.seller.nickname }}</small></p>
+                        <div class="actions">
+                            <a href="{{ url_for('buy_page', product_id=product.id) }}" class="btn btn-success">Buy</a>
+                            <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                                <button type="submit" class="btn btn-warning">🛒 Add</button>
+                            </form>
+                        </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <p>No products available yet.</p>
-    {% endif %}
-</div>
-
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No products available yet.</p>
+        {% endif %}
+    </div>
 
 </div>
 {% endblock %}
@@ -60,4 +61,3 @@ function toggleSidebar() {
 }
 </script>
 {% endblock %}
-

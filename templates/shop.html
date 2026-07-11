@@ -14,19 +14,17 @@
                     {% endif %}
 
                     <!-- Product info --> 
-<h3>{{ product.name|upper }}</h3>
-<p class="price">Ksh {{ "%.2f"|format(product.price) }}</p>
+                    <h3>{{ product.name|upper }}</h3>
+                    <p class="price">Ksh {{ "%.2f"|format(product.price) }}</p>
 
-<div class="actions">
-    <a href="{{ url_for('buy_page', product_id=product.id) }}" class="btn btn-success">Buy Now</a>
-    <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
-        <button type="submit" class="btn btn-warning">🛒 Add to Cart</button>
-    </form>
-</div>
-
-<p class="description">{{ product.description[:80] }}...</p>
-                       {% endif %}
+                    <div class="actions">
+                        <a href="{{ url_for('buy_page', product_id=product.id) }}" class="btn btn-success">Buy Now</a>
+                        <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                            <button type="submit" class="btn btn-warning">🛒 Add to Cart</button>
+                        </form>
                     </div>
+
+                    <p class="description">{{ product.description[:80] }}...</p>
                 </div>
             {% endfor %}
         </div>
