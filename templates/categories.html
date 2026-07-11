@@ -1,7 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 <h2>📂 Shop by Category</h2>
-<div class="category-buttons">
+
+<!-- Search bar -->
+<div class="search-bar">
+    <form method="GET" action="{{ url_for('categories_page') }}">
+        <input type="text" name="q" placeholder="Search categories or products..." value="{{ request.args.get('q','') }}">
+        <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+</div>
+
+<!-- Category grid -->
+<div class="category-grid">
     <a href="{{ url_for('show_category', category='Official Stores') }}">🏬 Official Stores</a>
     <a href="{{ url_for('show_category', category='Phones & Tablets') }}">📱 Phones & Tablets</a>
     <a href="{{ url_for('show_category', category='TVs & Audio') }}">📺 TVs & Audio</a>

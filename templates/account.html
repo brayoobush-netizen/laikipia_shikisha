@@ -1,62 +1,63 @@
 {% extends "layout.html" %}
 {% block content %}
 <div class="account-page">
-    <h2>Welcome, {{ current_user.nickname }}</h2>
 
-    <!-- Quick actions -->
-    <div class="actions">
-        <a href="{{ url_for('sell_page') }}" class="btn btn-primary">➕ Add Product</a>
-        <a href="{{ url_for('view_cart') }}" class="btn btn-warning">🛒 Go to Cart</a>
-        <a href="{{ url_for('shop_page') }}" class="btn btn-info">Browse Products</a>
+    <!-- Hamburger button -->
+<button class="hamburger" onclick="toggleSidebar()">☰</button>
+
+<!-- Collapsible Sidebar -->
+<div id="sidebar" class="sidebar">
+    <a href="{{ url_for('view_cart') }}" class="btn btn-warning">🛒 Cart</a>
+    <a href="{{ url_for('sell_page') }}" class="btn btn-primary">➕ Add Product</a>
+    <a href="{{ url_for('shop_page') }}" class="btn btn-info">Browse</a>
+</div>
+
+
+
+
+    <!-- Search Bar -->
+    <div class="search-bar">
+        <form method="GET" action="{{ url_for('account_page') }}">
+            <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q','') }}">
+            <button type="submit" class="btn btn-secondary">Search</button>
+        </form>
     </div>
 
-    <!-- My Products -->
-    <section>
-        <h3>My Listed Products</h3>
-        {% if my_products %}
-            <table class="product-table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Price</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for product in my_products %}
-                    <tr>
-                        <td>{{ product.name }}</td>
-                        <td>Ksh {{ "%.2f"|format(product.price) }}</td>
-                        <td>{{ product.status }}</td>
-                        <td>
-                            <a href="{{ url_for('buy_page', product_id=product.id) }}" class="btn btn-success">Buy/View</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>You haven’t listed any products yet.</p>
-        {% endif %}
-    </section>
+    <!-- Products Marketplace -->
+<div class="section">
+    <h3>All Live Products</h3>
+    {% if approved_products %}
+        <div class="product-list">
+            {% for product in approved_products %}
+                <div class="product-card">
+                    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="main-image">
+                    <h4>{{ product.name }}</h4>
+                    <p>Ksh {{ "%.2f"|format(product.price) }}</p>
+                    <p><small>Seller: {{ product.seller.nickname }}</small></p>
+                    <div class="actions">
+                        <a href="{{ url_for('buy_page', product_id=product.id) }}" class="btn btn-success">Buy</a>
+                        <form method="POST" action="{{ url_for('add_to_cart', product_id=product.id) }}">
+                            <button type="submit" class="btn btn-warning">🛒 Add</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No products available yet.</p>
+    {% endif %}
+</div>
 
-    <!-- My Purchases -->
-    <section>
-        <h3>My Purchases</h3>
-        {% if my_purchases %}
-            <ul class="purchase-list">
-                {% for activity in my_purchases %}
-                    <li>
-                        Bought <strong>{{ activity.product.name }}</strong> 
-                        from {{ activity.product.seller.nickname }}
-                        <a href="{{ url_for('review_product', product_id=activity.product.id) }}" class="btn btn-info">Review</a>
-                    </li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>You haven’t purchased anything yet.</p>
-        {% endif %}
-    </section>
+
 </div>
 {% endblock %}
+
+{% block scripts %}
+<script>
+function toggleSidebar() {
+    const sidebar = document.getElementById("sidebar");
+    sidebar.classList.toggle("open");
+}
+</script>
+{% endblock %}
+

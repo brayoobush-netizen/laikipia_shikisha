@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, request, flash, jsonify
+from flask import Flask, render_template, redirect, url_for, request, flash, jsonify, session
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, Product, Activity, db, Review
@@ -32,6 +32,11 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# 🔹 Custom unauthorized handler
+@login_manager.unauthorized_handler
+def unauthorized():
+    flash("⚠️ Please log in to purchase products.")
+    return redirect(url_for('login'))
 
 # --- Routes ---
 @app.route('/')
@@ -42,6 +47,10 @@ def index():
     # Not logged in → show public home page
     return render_template("index.html")
 
+@app.route('/shop', endpoint='shop_page')
+def shop():
+    products = Product.query.filter_by(status="approved").all()
+    return render_template("shop.html", products=products)
 
 
 @app.route('/buy/<int:product_id>', methods=['GET', 'POST'])
@@ -326,15 +335,16 @@ def account_page():
         action="purchase_completed"
     ).all()
 
+    # All live products (same as shop)
+    approved_products = Product.query.filter_by(status="approved").all()
+
     return render_template(
         "account.html",
         my_products=my_products,
-        my_purchases=my_purchases
+        my_purchases=my_purchases,
+        approved_products=approved_products
     )
-@app.route('/shop')
-def shop_page():
-    products = Product.query.filter_by(status="approved").all()
-    return render_template("shop.html", products=products)
+
 
 @app.route('/admin/approve/<int:product_id>')
 @login_required
@@ -364,6 +374,12 @@ def reject_product(product_id):
     return redirect(url_for('admin_dashboard'))
 
 
+@app.route('/category/<category>')
+@login_required
+def show_category(category):
+    # Query products by category
+    products = Product.query.filter_by(category=category, status="approved").all()
+    return render_template("category.html", category=category, products=products)
 
 
 
