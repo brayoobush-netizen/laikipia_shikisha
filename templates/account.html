@@ -2,6 +2,10 @@
 {% block content %}
 <div class="account-page">
 
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+    </div>
+
     <!-- Greeting -->
     <div class="welcome-banner">
         <h2>Hello, {{ current_user.nickname }} 👋</h2>
@@ -24,6 +28,35 @@
             <button type="submit" class="btn btn-secondary">Search</button>
         </form>
     </div>
+
+    <!-- Flash Sale Section -->
+<div class="flash-sale-banner">
+    <h3>🔥 Flash Sale Live Now!</h3>
+    {% if flash_products %}
+        <div class="flash-sale-list">
+            {% for product in flash_products %}
+                <div class="flash-card">
+                    <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+                    <h4>{{ product.name }}</h4>
+                    
+                    <!-- Glowing Discount Prices -->
+                    <p class="old-price">Ksh {{ "%.2f"|format(product.old_price) }}</p>
+                    <p class="new-price">Ksh {{ "%.2f"|format(product.price) }}</p>
+                    
+                    <a href="{{ url_for('buy_page', product_id=product.id) }}" class="buy-btn">Buy Now</a>
+                </div>
+            {% endfor %}
+            
+            <!-- See More Button -->
+            <div class="see-more">
+                <a href="{{ url_for('shop_page') }}">See More ➡️</a>
+            </div>
+        </div>
+    {% else %}
+        <p>No flash sale products right now.</p>
+    {% endif %}
+</div>
+
 
     <!-- Products Marketplace -->
     <div class="section">
@@ -54,6 +87,189 @@
 {% endblock %}
 
 {% block scripts %}
+<style>
+/* Hero Banner Slideshow */
+.hero-banner {
+    height: 250px;              /* desktop height */
+    color: white;
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 1.8em;
+    font-weight: bold;
+    text-shadow: 0 0 10px #000;
+    background-size: cover;
+    background-position: center;
+    animation: hero-slideshow 25s infinite; /* 25s cycle for 5 images */
+}
+
+/* Slideshow cycling through 5 images */
+@keyframes hero-slideshow {
+    0%   { background-image: url('/static/bg1.jpg'); }
+    20%  { background-image: url('/static/bg2.jpg'); }
+    40%  { background-image: url('/static/bg3.jpg'); }
+    60%  { background-image: url('/static/bg4.jpg'); }
+    80%  { background-image: url('/static/bg5.jpg'); }
+    100% { background-image: url('/static/bg1.jpg'); }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .hero-banner {
+        height: 180px;          /* smaller height for phones */
+        font-size: 1.2em;
+        padding: 20px 10px;
+    }
+}
+
+/* Flash Sale Banner */
+.flash-sale-banner {
+    background: linear-gradient(90deg, #ff0000, #ff9900);
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+    margin: 20px 0;
+    animation: flash-bg 2s infinite alternate;
+}
+@keyframes flash-bg {
+    from { background: #ff0000; }
+    to { background: #ff9900; }
+}
+.flash-sale-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.flash-card {
+    border: 2px solid #ff0000;
+    padding: 10px;
+    margin: 10px;
+    width: 180px;
+    animation: flash-border 1.5s infinite alternate;
+}
+@keyframes flash-border {
+    from { border-color: #ff0000; }
+    to { border-color: #ffff00; }
+}
+.flash-card img {
+    width: 100%;
+    height: auto;
+}
+.buy-btn {
+    display: inline-block;
+    background: #ffcc00;
+    color: #000;
+    padding: 5px 10px;
+    margin-top: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    animation: flash-btn 1s infinite alternate;
+}
+@keyframes flash-btn {
+    from { background: #ffcc00; }
+    to { background: #ff0000; color: #fff; }
+}
+
+/* Flash Sale Layout */
+.flash-sale-list {
+    display: flex;
+    flex-wrap: nowrap;       /* keeps items in one row */
+    overflow-x: auto;        /* scrollable if too many */
+    gap: 15px;
+    padding: 10px;
+}
+
+/* Flash Cards */
+.flash-card {
+    border: 2px solid #ff0000;
+    padding: 10px;
+    width: 180px;
+    flex: 0 0 auto;          /* prevents shrinking */
+    text-align: center;
+    animation: flash-border 1.5s infinite alternate;
+}
+
+/* Old Price (strikethrough + glow) */
+.old-price {
+    text-decoration: line-through;
+    color: #ccc;
+    font-size: 0.9em;
+    text-shadow: 0 0 5px #ff0000;
+}
+
+/* New Price (glowing) */
+.new-price {
+    color: #00ff00;
+    font-weight: bold;
+    font-size: 1.2em;
+    text-shadow: 0 0 10px #00ff00, 0 0 20px #ffcc00;
+    animation: glow-price 1s infinite alternate;
+}
+
+@keyframes glow-price {
+    from { text-shadow: 0 0 5px #00ff00; }
+    to { text-shadow: 0 0 20px #ffcc00; }
+}
+
+/* See More Button */
+.see-more {
+    flex: 0 0 auto;
+    align-self: center;
+}
+.see-more a {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #000;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    animation: flash-btn 1s infinite alternate;
+}
+
+/* Flash Sale Auto-Scroll */
+.flash-sale-list {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow: hidden;          /* hide overflow */
+    gap: 15px;
+    padding: 10px;
+    animation: scroll-sale 25s linear infinite; /* continuous scroll */
+}
+
+@keyframes scroll-sale {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-50%); } /* adjust based on content width */
+}
+
+/* Flash Cards */
+.flash-card {
+    flex: 0 0 auto;
+    width: 180px;
+    border: 2px solid #ff0000;
+    padding: 10px;
+    text-align: center;
+    animation: flash-border 1.5s infinite alternate;
+}
+
+/* See More Button pinned at end */
+.see-more {
+    flex: 0 0 auto;
+    align-self: center;
+}
+.see-more a {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #000;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    animation: flash-btn 1s infinite alternate;
+}
+
+
+</style>
+
 <script>
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");

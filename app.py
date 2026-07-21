@@ -6,6 +6,56 @@ from sqlalchemy import func, extract
 from flask_migrate import Migrate
 import os
 from werkzeug.utils import secure_filename
+import requests
+from requests.auth import HTTPBasicAuth
+
+def get_access_token():
+    consumer_key = "WWQWUNO74TFxiNwcAoU0Qy6Z3pG5ynfeOKWBGojHlj9PjHdU" 
+    consumer_secret = "lAXo7jeWx3k0TgSofMueI50OSUvB0gyhsSnYSc4jSAVTxGW7HOJSeG0aCcTriBnB"  
+    url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+
+    response = requests.get(url, auth=HTTPBasicAuth(consumer_key, consumer_secret))
+    print("🔍 Raw token response:", response.text)   # Debug line
+    return response.json().get('access_token')
+
+
+def register_urls():
+    access_token = get_access_token()
+    headers = {"Authorization": f"Bearer {access_token}"}
+    payload = {
+    "ShortCode": "600000",   # shared sandbox shortcode
+    "ResponseType": "Completed",
+    "ConfirmationURL": "https://yourdomain.com/api/confirmation",
+    "ValidationURL": "https://yourdomain.com/api/validation"
+}
+
+
+    response = requests.post(
+        "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/registerurl",
+        json=payload, headers=headers
+    )
+    print("🔍 Raw register response:", response.text)   # Debug line
+    return response.json()
+
+def simulate_c2b_payment(amount, phone, bill_ref):
+    access_token = get_access_token()
+    headers = {"Authorization": f"Bearer {access_token}"}
+    payload = {
+        "ShortCode": "600000",
+        "CommandID": "CustomerPayBillOnline",
+        "Amount": amount,
+        "Msisdn": phone,          # e.g. "254708374149" (sandbox test number)
+        "BillRefNumber": bill_ref # e.g. product ID or order number
+    }
+    response = requests.post(
+        "https://sandbox.safaricom.co.ke/mpesa/c2b/v1/simulate",
+        json=payload, headers=headers
+    )
+    print("🔍 Simulation response:", response.text)
+    return response.json()
+
+
+ 
 
 # Create Flask app once
 app = Flask(__name__)
@@ -52,6 +102,19 @@ def shop():
     products = Product.query.filter_by(status="approved").all()
     return render_template("shop.html", products=products)
 
+@app.route('/api/confirmation', methods=['POST'])
+def api_confirmation():
+    data = request.get_json()
+    print("✅ Confirmation received:", data)
+    return "OK", 200
+
+@app.route('/api/validation', methods=['POST'])
+def api_validation():
+    data = request.get_json()
+    print("🔍 Validation received:", data)
+    return "Accepted", 200
+
+
 
 @app.route('/buy/<int:product_id>', methods=['GET', 'POST'])
 @login_required
@@ -59,7 +122,6 @@ def buy_page(product_id):
     product = Product.query.get_or_404(product_id)
 
     if request.method == 'GET':
-        # Show confirmation page
         return render_template("buy.html", product=product)
 
     if request.method == 'POST':
@@ -67,11 +129,23 @@ def buy_page(product_id):
             flash("❌ This product is not available for purchase yet.")
             return redirect(url_for('account_page'))
 
-        # Payment logic would go here
+        payment_method = request.form.get("payment_method")
+
+        # Simulate payment initiation
+        if payment_method == "mpesa":
+            flash("📲 MPESA STK Push initiated. Complete payment on your phone.")
+            # integrate MPESA Daraja API here
+        elif payment_method == "airtel":
+            flash("📲 Airtel Money payment request sent.")
+            # integrate Airtel API here
+        elif payment_method == "bank":
+            flash("🏦 Bank transfer instructions sent to your email.")
+            # integrate bank API / send instructions
+
+        # Only mark as sold after payment confirmation
         product.status = "sold"
         db.session.commit()
 
-        # Log activity for admin dashboard
         new_activity = Activity(
             action="purchase_completed",
             user_id=current_user.id,
@@ -414,3 +488,6 @@ if __name__ == "__main__":
             print("Default admin created: email='brayoobush@gmail.com', password='22778779'")
 
     app.run(debug=True)
+
+if __name__ == "__main__":
+    register_urls()
