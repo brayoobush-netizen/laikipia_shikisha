@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home - Laikipia Shikisha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: #f5f5f5;
+      color: #333;
+    }
+    header {
+      background: linear-gradient(90deg, #00f0ff, #00ff88);
+      padding: 1rem;
+      text-align: center;
+      color: #000;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .search-bar {
+      margin: 1rem;
+      display: flex;
+      justify-content: center;
+    }
+    .search-bar input {
+      width: 90%;
+      padding: 0.8rem;
+      border-radius: 25px;
+      border: 1px solid #ccc;
+      outline: none;
+    }
+
+    .banner {
+      margin: 1rem;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 0 15px #00f0ff;
+      position: relative;
+      height: 300px;
+    }
+
+    .slider {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slide {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 1.5s ease-in-out;
+    }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .slide.active {
+      opacity: 1;
+      z-index: 1;
+    }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 1rem;
+      margin: 1rem;
+    }
+    .category-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: transform 0.2s ease;
+    }
+    .category-card:hover {
+      transform: scale(1.05);
+    }
+    .recent-finds {
+      margin: 1rem;
+    }
+    .recent-finds h3 {
+      margin-bottom: 1rem;
+    }
+    .recent-items {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+    }
+    .recent-item {
+      flex: 0 0 auto;
+      background: #fff;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #000;
+      display: flex;
+      justify-content: space-around;
+      padding: 0.8rem 0;
+      color: #fff;
+    }
+    nav a {
+      color: #00f0ff;
+      text-decoration: none;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    Laikipia Shikisha Marketplace
+  </header>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Search products...">
+  </div>
+
+  <div class="banner">
+    <div class="slider">
+      <div class="slide active"><img src="{{ url_for('static', filename='bg1.jpg') }}" alt="Banner 1"></div>
+      <div class="slide"><img src="{{ url_for('static', filename='bg2.jpg') }}" alt="Banner 2"></div>
+      <div class="slide"><img src="{{ url_for('static', filename='bg3.jpg') }}" alt="Banner 3"></div>
+      <div class="slide"><img src="{{ url_for('static', filename='bg4.jpg') }}" alt="Banner 4"></div>
+      <div class="slide"><img src="{{ url_for('static', filename='bg5.jpg') }}" alt="Banner 5"></div>
+    </div>
+  </div>
+
+  <div class="categories">
+    <div class="category-card">TVs</div>
+    <div class="category-card">Phones</div>
+    <div class="category-card">Kitchen</div>
+    <div class="category-card">Music</div>
+    <div class="category-card">Fashion</div>
+    <div class="category-card">Deals</div>
+  </div>
+
+  <div class="recent-finds">
+    <h3>Your Recent Finds</h3>
+    <div class="recent-items">
+      <div class="recent-item">Watch -90%</div>
+      <div class="recent-item">Fridge -40%</div>
+    </div>
+  </div>
+
+  <nav>
+    <a href="/home">Home</a>
+    <a href="/categories">Categories</a>
+    <a href="/cart">Cart</a>
+    <a href="/wishlist">Wishlist</a>
+    <a href="/account">Account</a>
+  </nav>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let index = 0;
+  let startX = 0;
+  let endX = 0;
+
+  function showSlide(newIndex) {
+    slides.forEach((slide, i) => {
+      slide.classList.remove('active');
+      if (i === newIndex) {
+        slide.classList.add('active');
+      }
+    });
+  }
+
+  function nextSlide() {
+    index = (index + 1) % slides.length;
+    showSlide(index);
+  }
+
+  function prevSlide() {
+    index = (index - 1 + slides.length) % slides.length;
+    showSlide(index);
+  }
+
+  // Auto-slide
+  setInterval(nextSlide, 4000);
+
+  // Touch events for swipe
+  const slider = document.querySelector('.slider');
+  slider.addEventListener('touchstart', e => {
+    startX = e.touches[0].clientX;
+  });
+  slider.addEventListener('touchend', e => {
+    endX = e.changedTouches[0].clientX;
+    if (startX - endX > 50) nextSlide();   // swipe left
+    if (endX - startX > 50) prevSlide();   // swipe right
+  });
+</script>
+
+</body>
+</html>
