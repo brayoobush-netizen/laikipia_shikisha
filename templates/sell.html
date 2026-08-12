@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Sell Your Product</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b, #334155); /* eye-friendly gradient */
+      color: #f1f5f9;
+      padding: 20px;
+    }
+    header {
+      background: linear-gradient(90deg, #00f0ff, #00ff88);
+      padding: 1rem;
+      text-align: center;
+      color: #000;
+      font-weight: 700;
+      font-size: 1.4rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .container {
+  max-width: 700px;
+  margin: 20px auto;
+  background: linear-gradient(135deg, #1e293b, #374151); /* dark slate gradient */
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  color: #f9fafb; /* light text for contrast */
+}
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-weight: 600; margin-bottom: 0.4rem; }
+    input, textarea {
+      width: 100%;
+      padding: 0.8rem;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      outline: none;
+      font-size: 0.95rem;
+      font-family: 'Poppins', sans-serif;
+    }
+    input[type="file"] { padding: 0.4rem; }
+    .preview { margin-top: 1rem; text-align: center; }
+    .preview img {
+      max-width: 100%;
+      max-height: 250px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .price-info {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #e6ffed;
+      border: 1px solid #10b981;
+      border-radius: 10px;
+      color: #065f46;
+      font-weight: 600;
+    }
+    button {
+      display: inline-block;
+      background: linear-gradient(90deg, #00f0ff, #00ff88);
+      color: #000;
+      font-weight: 700;
+      padding: 0.75rem 1.8rem;
+      border-radius: 30px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+    button:hover { transform: translateY(-2px); box-shadow: 0 0 15px rgba(0, 255, 136, 0.6); }
+
+    /* Success Popup */
+    .popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .popup-content {
+  background: linear-gradient(135deg, #1e293b, #374151); /* match container style */
+  padding: 20px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  color: #f9fafb;
+}
+    .tick {
+      font-size: 3rem;
+      color: #10b981;
+      display: block;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>Sell Your Product</header>
+  <div class="container">
+    <form id="sellForm" method="POST" action="/sell" enctype="multipart/form-data">
+      <div class="form-group">
+        <label for="productName">Product Name</label>
+        <input type="text" id="productName" name="productName" required>
+      </div>
+      <div class="form-group">
+        <label for="productDesc">Description</label>
+        <textarea id="productDesc" name="productDesc" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="productPrice">Price (Ksh)</label>
+        <input type="number" id="productPrice" name="productPrice" min="1" required>
+      </div>
+      <div class="form-group">
+        <label for="productImage">Upload Image</label>
+        <input type="file" id="productImage" name="productImage" accept="image/*" required>
+      </div>
+      <div class="preview" id="preview"></div>
+      <div class="price-info" id="priceInfo">Enter a price to see your earnings after 7% cut.</div>
+      <button type="submit">List Product</button>
+    </form>
+  </div>
+
+  <!-- Success Popup -->
+  <div id="successPopup" class="popup">
+    <div class="popup-content">
+      <span class="tick">✔</span>
+      <h3>Product Listed Successfully!</h3>
+      <p>Redirecting to Live Products...</p>
+    </div>
+  </div>
+
+  <script>
+    const productImage = document.getElementById('productImage');
+    const preview = document.getElementById('preview');
+    const productPrice = document.getElementById('productPrice');
+    const priceInfo = document.getElementById('priceInfo');
+
+    productImage.addEventListener('change', () => {
+      const file = productImage.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          preview.innerHTML = `<img src="${e.target.result}" alt="Product Preview">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    productPrice.addEventListener('input', () => {
+      const price = parseFloat(productPrice.value);
+      if (!isNaN(price) && price > 0) {
+        const cut = price * 0.07;
+        const earnings = price - cut;
+        priceInfo.textContent = `Marketplace takes 7% (Ksh ${cut.toFixed(2)}). You will earn Ksh ${earnings.toFixed(2)}.`;
+      } else {
+        priceInfo.textContent = 'Enter a price to see your earnings after 7% cut.';
+      }
+    });
+
+    // Success popup + redirect
+    document.getElementById('sellForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+
+      fetch('/sell', { method: 'POST', body: formData })
+        .then(res => {
+          if (res.ok) {
+            showSuccessPopup();
+          } else {
+            alert("Failed to list product. Please try again.");
+          }
+        })
+        .catch(() => alert("Error connecting to server."));
+    });
+
+    function showSuccessPopup() {
+      const popup = document.getElementById('successPopup');
+      popup.style.display = 'flex';
+      setTimeout(() => {
+        popup.style.display = 'none';
+        window.location.href = '/home';
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

@@ -1,53 +1,18 @@
-from flask import Flask, render_template, request, redirect, url_for, session
-import sqlite3
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from models import db, Product, User, Cart, Wishlist
+import os
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  # change this later
+app.config['SECRET_KEY'] = "supersecret123"
+app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///laikipia.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 
-# --- Database Setup ---
-def init_db():
-    conn = sqlite3.connect("laikipia.db")
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    email TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL
-                )''')
-    conn.commit()
-    conn.close()
+# ✅ Initialize db with app
+db.init_app(app)
 
-def init_db():
-    conn = sqlite3.connect("laikipia.db")
-    c = conn.cursor()
-    # Users table
-    c.execute('''CREATE TABLE IF NOT EXISTS users (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    username TEXT UNIQUE NOT NULL,
-                    email TEXT UNIQUE NOT NULL,
-                    password TEXT NOT NULL
-                )''')
-    # Cart table
-    c.execute('''CREATE TABLE IF NOT EXISTS cart (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    item_name TEXT NOT NULL,
-                    price REAL NOT NULL,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )''')
-    # Wishlist table
-    c.execute('''CREATE TABLE IF NOT EXISTS wishlist (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    user_id INTEGER NOT NULL,
-                    item_name TEXT NOT NULL,
-                    FOREIGN KEY(user_id) REFERENCES users(id)
-                )''')
-    conn.commit()
-    conn.close()
-
-
-init_db()
+with app.app_context():
+    db.create_all()
 
 # --- Routes ---
 @app.route("/")
@@ -90,11 +55,42 @@ def login():
             return "Invalid credentials!"
     return render_template("login.html")
 
-@app.route("/home")
+@app.route('/home')
 def home():
     if "user_id" in session:
-        return render_template("home.html")
-    return redirect(url_for("login"))
+        # user is logged in
+        products = Product.query.all()
+        return render_template("home.html", products=products, logged_in=True)
+    else:
+        products = Product.query.all()
+        return render_template("home.html", products=products, logged_in=False)
+
+
+@app.route('/sell', methods=['GET', 'POST'])
+def sell():
+    if request.method == 'POST':
+        try:
+            name = request.form['productName']
+            desc = request.form['productDesc']
+            price = float(request.form['productPrice'])
+            image_file = request.files['productImage']
+
+            filename = image_file.filename
+            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+            image_file.save(save_path)
+
+            product = Product(name=name, description=desc, price=price, image=f'uploads/{filename}')
+            db.session.add(product)
+            db.session.commit()
+
+            return jsonify({"message": "Product listed successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 400
+
+    # ✅ When GET request → render the Sell form
+    return render_template('sell.html')
+
 
 @app.route("/logout")
 def logout():

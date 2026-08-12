@@ -4,43 +4,102 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Home - Laikipia Shikisha</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #f5f5f5;
-      color: #333;
+    * {
+      box-sizing: border-box;
     }
+    body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #0f172a, #1e293b, #334155); /* deep navy → slate gradient */
+  color: #f1f5f9; /* light text for contrast */
+  padding-bottom: 80px; /* prevent fixed nav overlap */
+}
+
+    
     header {
       background: linear-gradient(90deg, #00f0ff, #00ff88);
       padding: 1rem;
       text-align: center;
       color: #000;
-      font-weight: 600;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      font-weight: 700;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
+
+    /* Container max-width for cleaner desktop & tablet layout */
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 10px;
+    }
+
     .search-bar {
-      margin: 1rem;
+      margin: 1rem 0;
       display: flex;
       justify-content: center;
     }
     .search-bar input {
-      width: 90%;
-      padding: 0.8rem;
+      width: 100%;
+      padding: 0.8rem 1.2rem;
       border-radius: 25px;
-      border: 1px solid #ccc;
+      border: 1px solid #ddd;
       outline: none;
+      font-size: 0.95rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
+    /* Sell CTA Banner & Button */
+    .sell-cta-card {
+      background: linear-gradient(135deg, #111827, #1f2937);
+      color: #fff;
+      border-radius: 12px;
+      padding: 1.2rem 1rem;
+      margin: 1rem 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 0.8rem;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    .sell-cta-card h2 {
+      margin: 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .sell-cta-card p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: #d1d5db;
+    }
+    .btn-sell {
+      display: inline-block;
+      background: linear-gradient(90deg, #00f0ff, #00ff88);
+      color: #000;
+      font-weight: 700;
+      padding: 0.75rem 1.8rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 0 10px rgba(0, 240, 255, 0.4);
+    }
+    .btn-sell:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 15px rgba(0, 255, 136, 0.6);
+    }
+
+    /* Slider Banner */
     .banner {
-      margin: 1rem;
+      margin: 1rem 0;
       background: #000;
-      border-radius: 10px;
+      border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 0 15px #00f0ff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       position: relative;
-      height: 300px;
+      height: 220px;
     }
 
     .slider {
@@ -56,7 +115,7 @@
       width: 100%;
       height: 100%;
       opacity: 0;
-      transition: opacity 1.5s ease-in-out;
+      transition: opacity 1s ease-in-out;
     }
 
     .slide img {
@@ -70,95 +129,217 @@
       z-index: 1;
     }
 
-    .categories {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-      gap: 1rem;
-      margin: 1rem;
-    }
-    .category-card {
-      background: #fff;
-      border-radius: 10px;
-      padding: 1rem;
-      text-align: center;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease;
-    }
-    .category-card:hover {
-      transform: scale(1.05);
-    }
-    .recent-finds {
-      margin: 1rem;
-    }
-    .recent-finds h3 {
-      margin-bottom: 1rem;
-    }
-    .recent-items {
-      display: flex;
-      gap: 1rem;
-      overflow-x: auto;
-    }
-    .recent-item {
-      flex: 0 0 auto;
-      background: #fff;
-      border-radius: 10px;
-      padding: 1rem;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #000;
-      display: flex;
-      justify-content: space-around;
-      padding: 0.8rem 0;
-      color: #fff;
-    }
-    nav a {
-      color: #00f0ff;
-      text-decoration: none;
-      font-weight: 600;
+    /* Live Products Section */
+.recent-finds {
+  margin: 1.5rem 0;
+}
+.recent-finds h3 {
+  margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+}
+.recent-items {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 per row on large screens */
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.recent-item {
+  position: relative;
+  background: transparent; /* dark base */
+  border-radius: 10px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #f9fafb;
+  overflow: hidden;
+}
+
+.recent-item::before {
+  content: "";
+  position: absolute;
+  inset: 0; /* cover full card */
+  border-radius: 12px;
+  padding: 2px; /* thickness of glow border */
+  background: linear-gradient(270deg,
+    #00f0ff, #ff00f0, #00ff88, #ff8800, #00f0ff);
+  background-size: 800% 800%;
+  animation: neonGlow 6s ease-in-out infinite;
+  filter: blur(4px);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+}
+
+/* Glow animation */
+@keyframes neonGlow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.recent-item img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 6px;
+  position: relative;
+  z-index: 1;
+}
+.recent-item p {
+  margin: 0.4rem 0 0.2rem 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #f9fafb;
+  position: relative;
+  z-index: 1;
+}
+.recent-item .price {
+  color: #10b981;
+  font-weight: 700;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Tablet screens */
+@media (max-width: 1024px) {
+  .recent-items {
+    grid-template-columns: repeat(3, 1fr); /* 3 per row */
+  }
+}
+
+/* Mobile screens */
+@media (max-width: 600px) {
+  .recent-items {
+    grid-template-columns: repeat(2, 1fr); /* 2 per row */
+  }
+}
+
+/* Very small phones */
+@media (max-width: 360px) {
+  .recent-items {
+    grid-template-columns: 1fr; /* 1 per row */
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 6px; /* space between buttons */
+  margin-top: 6px;
+}
+
+.actions button {
+  flex: 1;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Buy button */
+.btn-buy {
+  background: linear-gradient(90deg, #00ff88, #00f0ff);
+  color: #000;
+  font-weight: 600;
+  box-shadow: 0 0 6px rgba(0,255,136,0.6);
+}
+.btn-buy:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0,255,136,0.8);
+}
+
+/* Cart button */
+.btn-cart {
+  background: linear-gradient(90deg, #ff00f0, #ff8800);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 0 6px rgba(255,0,240,0.6);
+}
+.btn-cart:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(255,0,240,0.8);
+}
+
+
+
     }
   </style>
 </head>
 <body>
+
   <header>
     Laikipia Shikisha Marketplace
   </header>
 
-  <div class="search-bar">
-    <input type="text" placeholder="Search products...">
-  </div>
-
-  <div class="banner">
-    <div class="slider">
-      <div class="slide active"><img src="{{ url_for('static', filename='bg1.jpg') }}" alt="Banner 1"></div>
-      <div class="slide"><img src="{{ url_for('static', filename='bg2.jpg') }}" alt="Banner 2"></div>
-      <div class="slide"><img src="{{ url_for('static', filename='bg3.jpg') }}" alt="Banner 3"></div>
-      <div class="slide"><img src="{{ url_for('static', filename='bg4.jpg') }}" alt="Banner 4"></div>
-      <div class="slide"><img src="{{ url_for('static', filename='bg5.jpg') }}" alt="Banner 5"></div>
+  <div class="container">
+    
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <input type="text" placeholder="Search products...">
     </div>
-  </div>
 
-  <div class="categories">
-    <div class="category-card">TVs</div>
-    <div class="category-card">Phones</div>
-    <div class="category-card">Kitchen</div>
-    <div class="category-card">Music</div>
-    <div class="category-card">Fashion</div>
-    <div class="category-card">Deals</div>
-  </div>
-
-  <div class="recent-finds">
-    <h3>Your Recent Finds</h3>
-    <div class="recent-items">
-      <div class="recent-item">Watch -90%</div>
-      <div class="recent-item">Fridge -40%</div>
+    <!-- Sell Products CTA -->
+    <div class="sell-cta-card">
+      <div>
+        <h2>Have items to sell?</h2>
+        <p>List your products on Laikipia Shikisha for 100% Free!</p>
+      </div>
+      <a href="/sell" class="btn-sell">+ Start Selling Now</a>
     </div>
+
+    <!-- Banner Slider -->
+    <div class="banner">
+      <div class="slider">
+        <div class="slide active"><img src="{{ url_for('static', filename='bg1.jpg') }}" alt="Banner 1"></div>
+        <div class="slide"><img src="{{ url_for('static', filename='bg2.jpg') }}" alt="Banner 2"></div>
+        <div class="slide"><img src="{{ url_for('static', filename='bg3.jpg') }}" alt="Banner 3"></div>
+        <div class="slide"><img src="{{ url_for('static', filename='bg4.jpg') }}" alt="Banner 4"></div>
+        <div class="slide"><img src="{{ url_for('static', filename='bg5.jpg') }}" alt="Banner 5"></div>
+      </div>
+    </div>
+
+    <!-- Live Products Section -->
+<div class="recent-finds">
+  <h3>Live Products</h3>
+  <div class="recent-items">
+    {% for product in products %}
+      <div class="recent-item">
+        {% if product.discount > 0 %}
+          <span class="discount-badge">-{{ product.discount }}%</span>
+        {% endif %}
+        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}">
+        <p>{{ product.name }}</p>
+        <span class="price">Ksh {{ product.price }}</span>
+
+        <!-- Tiny buttons row -->
+        <div class="actions">
+          <button class="btn-buy">Buy</button>
+          <button class="btn-cart">🛒</button>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+
   </div>
 
+<div class="payment-info">
+  <h4>Payment Options</h4>
+  <p>MPESA: Buy Goods & Services till <strong>6984245</strong></p>
+  <p>Send Money: <strong>0792572591</strong></p>
+  <p>Airtel / Bank transfers also accepted.</p>
+</div>
+
+
+  <!-- Navigation Bar -->
   <nav>
     <a href="/home">Home</a>
     <a href="/categories">Categories</a>
@@ -192,19 +373,40 @@
     showSlide(index);
   }
 
-  // Auto-slide
+  // Auto-slide every 4 seconds
   setInterval(nextSlide, 4000);
 
-  // Touch events for swipe
+  // Swipe support for mobile devices
   const slider = document.querySelector('.slider');
   slider.addEventListener('touchstart', e => {
     startX = e.touches[0].clientX;
   });
   slider.addEventListener('touchend', e => {
     endX = e.changedTouches[0].clientX;
-    if (startX - endX > 50) nextSlide();   // swipe left
-    if (endX - startX > 50) prevSlide();   // swipe right
+    if (startX - endX > 50) nextSlide();
+    if (endX - startX > 50) prevSlide();
   });
+
+const liveProducts = document.querySelector('.recent-items');
+
+function addToLiveProducts(name, price, image, discount=0) {
+  const item = document.createElement('div');
+  item.className = 'recent-item';
+  item.innerHTML = `
+    ${discount > 0 ? `<span class="discount-badge">-${discount}%</span>` : ''}
+    <img src="${image}" alt="${name}">
+    <p>${name}</p>
+    <span class="price">Ksh ${price}</span>
+    <div class="actions">
+      <button class="btn btn-success">Buy</button>
+      <button class="btn btn-warning">🛒 Add</button>
+    </div>
+  `;
+  liveProducts.appendChild(item);
+}
+
+
+
 </script>
 
 </body>
