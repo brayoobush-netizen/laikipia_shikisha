@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="buy-confirm">
+    <h2>Buy {{ product.name }}</h2>
+
+    <div class="product-detail">
+        <img src="{{ url_for('static', filename=product.image) }}" alt="{{ product.name }}" class="main-image">
+        <p><strong>Price:</strong> Ksh {{ "%.2f"|format(product.price) }}</p>
+        <p><strong>Description:</strong> {{ product.description }}</p>
+    </div>
+
+    <form method="POST" class="buy-form">
+        <label for="quantity"><strong>Quantity:</strong></label>
+        <input type="number" name="quantity" id="quantity" value="1" min="1" required>
+
+        <label for="color"><strong>Choose Color:</strong></label>
+        <select name="color" id="color">
+            <option value="red">Red</option>
+            <option value="blue">Blue</option>
+            <option value="black">Black</option>
+        </select>
+
+        <label for="size"><strong>Choose Size:</strong></label>
+        <select name="size" id="size">
+            <option value="small">Small</option>
+            <option value="medium">Medium</option>
+            <option value="large">Large</option>
+        </select>
+
+        <label for="payment_method"><strong>Payment Method:</strong></label>
+        <select name="payment_method" id="payment_method" required>
+            <option value="mpesa">MPESA</option>
+            <option value="airtel">Airtel Money</option>
+            <option value="bank">Bank Transfer</option>
+        </select>
+
+        <button type="submit" class="btn btn-success">✅ Place Order</button>
+        <a href="{{ url_for('home') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
